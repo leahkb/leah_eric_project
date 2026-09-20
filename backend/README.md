@@ -1,52 +1,48 @@
 # Backend
 
-This is the Node + Prisma backend.
+This backend is intentionally small. The easiest way to understand it is to read the files in this order:
 
-## Layout
+1. `src/index.ts` starts Fastify, registers CORS, adds the `/health` route, and starts the server.
+2. `src/env.ts` reads and validates environment variables.
+3. `src/prisma.ts` creates the Prisma client and closes it when the server shuts down.
+4. `prisma/schema.prisma` defines the database models.
+
+## Minimal layout
 
 ```text
 backend/
   prisma/
     schema.prisma
-    migrations/
   src/
-    app.ts
-    server.ts
-    config/
-      env.ts
-    lib/
-      prisma.ts
-    plugins/
-      cors.ts
-    routes/
-      health.route.ts
-      index.ts
-    modules/
-      README.md
+    index.ts
+    env.ts
+    prisma.ts
     generated/
       prisma/
 ```
 
-## What lives where
+`src/generated/prisma/` is Prisma-generated code. Do not edit those files by hand.
 
-- `src/server.ts` boots the HTTP server.
-- `src/app.ts` builds the Fastify instance and registers plugins/routes.
-- `src/config/env.ts` loads and validates environment variables.
-- `src/lib/prisma.ts` owns the Prisma client and database pool.
-- `src/plugins/` holds reusable Fastify plugins.
-- `src/routes/` holds top-level route registration.
-- `src/modules/` holds feature-specific code, grouped by domain.
-- `prisma/schema.prisma` is the source of truth for database models.
-- `src/generated/prisma/` is Prisma-generated code. Do not edit it by hand.
+## How to run it
 
-## How to work on it
+1. Copy `backend/.env.example` to `backend/.env` if you want to run it outside Docker.
+2. Make sure PostgreSQL is running and `DATABASE_URL` points at it.
+3. From `backend/`, run:
 
-1. Update the database schema in `prisma/schema.prisma`.
-2. Run `npm run db:migrate` for real schema changes, or `npm run db:push` for quick local syncs.
-3. Run `npm run db:generate` if the client needs to be regenerated.
-4. Add feature code under `src/modules/<domain>/`.
-5. Register routes from `src/routes/index.ts`.
-6. Use `prisma` from `src/lib/prisma.ts` instead of creating new clients in handlers.
+```bash
+npm install
+npm run db:generate
+npm run dev
+```
+
+4. Open `http://localhost:3000/health`.
+
+## How to add code
+
+1. Put new Fastify routes in `src/index.ts` until the file feels too crowded.
+2. When you have more than a couple of routes, extract them into a new file and register them from `src/index.ts`.
+3. Import `prisma` from `src/prisma.ts` anywhere you need database access.
+4. Keep database schema changes in `prisma/schema.prisma`, then run `npm run db:migrate` or `npm run db:push`.
 
 ## Common commands
 
@@ -58,10 +54,3 @@ npm run db:generate
 npm run db:migrate
 npm run db:push
 ```
-
-## Conventions
-
-- Keep startup logic in `src/server.ts`, not inside route files.
-- Keep database access out of route handlers when the codebase grows; move it into services or repositories.
-- Keep generated code out of hand edits.
-- Keep Compose-owned ports and service URLs in `docker-compose.yml`; use `.env` and `.env.example` as mirrors of that setup.
