@@ -1,7 +1,7 @@
 import cors from "@fastify/cors";
 import Fastify from "fastify";
 import { env } from "./env.js";
-import { closePrisma } from "./prisma.js";
+import { closePrisma, prisma } from "./prisma.js";
 
 async function main() {
   const app = Fastify({ logger: true });
@@ -14,6 +14,14 @@ async function main() {
   app.get("/health", async () => ({
     status: "ok",
   }));
+
+  app.get("/api/ideas", async () => {
+    const ideas = await prisma.ideas.findMany({
+      include: { author: true },
+      orderBy: { createdDate: "desc" },
+    });
+    return ideas;
+  });
 
   app.addHook("onClose", async () => {
     await closePrisma();

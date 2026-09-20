@@ -1,11 +1,31 @@
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
+interface Idea {
+  id: number
+  body: string
+  createdDate: string
+  author: {
+    id: number
+    username: string
+  }
+}
+
 function App() {
   const [count, setCount] = useState(0)
+
+  const { data: ideas, isLoading, error } = useQuery<Idea[]>({
+    queryKey: ['ideas'],
+    queryFn: async () => {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/ideas`)
+      if (!res.ok) throw new Error('Failed to fetch ideas')
+      return res.json()
+    },
+  })
 
   return (
     <>
@@ -28,6 +48,23 @@ function App() {
         >
           Count is {count}
         </button>
+      </section>
+
+      <section id="ideas">
+        <h2>Ideas from Database</h2>
+        {isLoading && <p>Loading...</p>}
+        {error && <p>Error: {error.message}</p>}
+        {ideas && (
+          <ul>
+            {ideas.map((idea) => (
+              <li key={idea.id}>
+                <strong>{idea.author.username}</strong>: {idea.body}
+                <br />
+                <small>{new Date(idea.createdDate).toLocaleString()}</small>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <div className="ticks"></div>
