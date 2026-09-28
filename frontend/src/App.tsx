@@ -6,6 +6,7 @@ import ericsneeze from "./assets/ericsneeze.jpeg";
 import ericgolf from "./assets/ericgolf.jpeg";
 import "./App.css";
 import TextChange from "./Components/TextChange";
+import CuteButton from "./Components/CuteButton";
 
 interface Idea {
   id: number;
@@ -87,6 +88,23 @@ function App() {
             ))}
           </ul>
         )}
+      </section>
+
+      <section
+        id="buttons"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)",
+          gap: "20px",
+          maxWidth: "700px",
+          margin: "40px auto",
+          padding: "0 20px",
+        }}
+      >
+        <CuteButton> Games </CuteButton>
+        <CuteButton> Music Recommendations </CuteButton>
+        <CuteButton> Movie List </CuteButton>
+        <CuteButton> Calendar </CuteButton>
       </section>
     </>
   );
