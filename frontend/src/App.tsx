@@ -69,7 +69,7 @@ function App() {
         </div>
       </section>
 
-      <section style={{ padding: "35px" }} id="text-input">
+      <section className="text-input" style={{ padding: "35px" }} id="text-input">
         <TextChange />
       </section>
 

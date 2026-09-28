@@ -17,6 +17,16 @@
   }
 }
 
+.text-input {
+  color: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+  .text-input {
+    color: #fff;
+  }
+}
+
 .hero {
   position: relative;
 
